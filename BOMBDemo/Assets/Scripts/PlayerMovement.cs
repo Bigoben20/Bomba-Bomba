@@ -8,7 +8,12 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D rigid;
     public Animator animator;
     Vector2 movement;
-    // Update is called once per frame
+    Vector3 respawnPoint;
+
+    void Start() 
+    {
+        respawnPoint = transform.position; //storing where the player is at before the first frame
+    }
     void Update()
     {
         movement.x = Input.GetAxisRaw("Horizontal");
@@ -17,11 +22,24 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("Horizontal", movement.x);
         animator.SetFloat("Vertical", movement.y);
         animator.SetFloat("Speed", movement.sqrMagnitude);
-
     }
 
     void FixedUpdate() 
     {
         rigid.MovePosition(rigid.position + movement * moveSpeed * Time.fixedDeltaTime);
+    }
+
+     void OnTriggerEnter2D(Collider2D other) 
+    {
+        if(other.CompareTag("hitDetector"))
+        {
+            transform.position = respawnPoint;
+            Debug.Log("respawned");
+        }
+        else if(other.CompareTag("checkpoint"))
+        {
+            respawnPoint = transform.position;
+            Debug.Log("checkpoint reached");
+        }
     }
 }
